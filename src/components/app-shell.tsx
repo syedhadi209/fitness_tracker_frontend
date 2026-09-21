@@ -32,8 +32,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     );
   }
 
+  const isChat = pathname === "/chat";
+
   return (
-    <div className="min-h-screen bg-cream">
+    <div className={isChat ? "h-dvh overflow-hidden bg-cream" : "min-h-screen bg-cream"}>
       <aside className="fixed inset-y-0 left-0 hidden w-60 flex-col border-r border-ink/8 bg-paper px-4 py-6 lg:flex">
         <Link href="/" className="mb-8 px-2">
           <p className="font-serif text-3xl tracking-tight">Pulse</p>
@@ -68,7 +70,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <main className="pb-24 lg:ml-60 lg:pb-8">{children}</main>
+      <main
+        className={
+          isChat
+            ? "flex h-full min-h-0 flex-col overflow-hidden pb-[4.25rem] lg:ml-60 lg:pb-0"
+            : "pb-24 lg:ml-60 lg:pb-8"
+        }
+      >
+        {children}
+      </main>
 
       <nav className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-4 border-t border-ink/8 bg-paper/95 backdrop-blur lg:hidden">
         {NAV.map((item) => {

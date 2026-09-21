@@ -190,4 +190,6 @@ export type ParsedExercise = {
   description: string;
   duration_minutes: number;
   met_value: number;
+  sets?: number;
+  reps?: number;
 };

@@ -205,9 +205,12 @@ export const api = {
   createWorkout(data: {
     date: string;
     description: string;
-    duration_minutes: number;
+    duration_minutes?: number;
     met_value?: number;
     raw_text?: string;
+    source?: string;
+    sets?: number;
+    reps?: number;
   }) {
     return request<WorkoutLog>("/api/activity/workouts/", {
       method: "POST",

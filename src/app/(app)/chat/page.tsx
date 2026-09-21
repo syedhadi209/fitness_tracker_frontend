@@ -23,7 +23,7 @@ export default function ChatPage() {
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const bottom = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const loadSessions = useCallback(async () => {
     const page = await api.sessions();
@@ -46,7 +46,9 @@ export default function ChatPage() {
   }, [loadSessions]);
 
   useEffect(() => {
-    bottom.current?.scrollIntoView({ behavior: "smooth" });
+    const list = listRef.current;
+    if (!list) return;
+    list.scrollTo({ top: list.scrollHeight, behavior: "smooth" });
   }, [messages, busy]);
 
   async function send(message: string) {
@@ -110,8 +112,8 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-5.5rem)] flex-col lg:h-screen">
-      <header className="flex items-center justify-between border-b border-ink/8 bg-paper px-4 py-3">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+      <header className="flex shrink-0 items-center justify-between border-b border-ink/8 bg-paper px-4 py-3">
         <div>
           <p className="text-xs uppercase tracking-widest text-moss">Trainer</p>
           <h1 className="font-serif text-xl">Chat like WhatsApp</h1>
@@ -121,7 +123,7 @@ export default function ChatPage() {
         </button>
       </header>
 
-      <div className="flex min-h-0 flex-1">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         <aside className="hidden w-56 overflow-y-auto border-r border-ink/8 bg-paper p-3 lg:block">
           {sessions.map((session) => (
             <button
@@ -137,8 +139,8 @@ export default function ChatPage() {
           ))}
         </aside>
 
-        <div className="flex min-w-0 flex-1 flex-col chat-wallpaper">
-          <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col chat-wallpaper">
+          <div ref={listRef} className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
             {!messages.length ? (
               <div className="mx-auto mt-10 max-w-sm rounded-3xl bg-paper/90 p-5 text-center shadow-sm">
                 <p className="font-serif text-2xl">Tell me about your day.</p>
@@ -189,10 +191,9 @@ export default function ChatPage() {
               </div>
             ) : null}
             {error ? <p className="text-center text-sm text-ember">{error}</p> : null}
-            <div ref={bottom} />
           </div>
 
-          <form onSubmit={onSubmit} className="border-t border-ink/8 bg-paper px-3 py-3">
+          <form onSubmit={onSubmit} className="shrink-0 border-t border-ink/8 bg-paper px-3 py-3">
             <div className="mx-auto flex max-w-2xl items-end gap-2">
               <textarea
                 value={text}

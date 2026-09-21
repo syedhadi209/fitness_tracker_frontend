@@ -2,20 +2,19 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Footprints, MessageCircle, Plus, Scale, Trash2 } from "lucide-react";
+import { ArrowUpRight, Footprints, MessageCircle, Plus, Scale } from "lucide-react";
 
-import { DateNav } from "@/components/date-nav";
 import { LogSheet } from "@/components/log-sheet";
 import { MacroBar, Ring } from "@/components/rings";
 import { api, errorMessage } from "@/lib/api";
-import { grams, kcal, num, todayISO } from "@/lib/format";
-import type { Dashboard, MealLog, StepLog, WeightLog, WorkoutLog } from "@/lib/types";
+import { kcal, num, todayISO } from "@/lib/format";
+import { useClientReady } from "@/lib/use-client-ready";
+import type { Dashboard, StepLog, WeightLog } from "@/lib/types";
 
 export default function DashboardPage() {
-  const [date, setDate] = useState(todayISO());
+  const ready = useClientReady();
+  const [date, setDate] = useState("");
   const [data, setData] = useState<Dashboard | null>(null);
-  const [meals, setMeals] = useState<MealLog[]>([]);
-  const [workouts, setWorkouts] = useState<WorkoutLog[]>([]);
   const [stepLog, setStepLog] = useState<StepLog | null>(null);
   const [weightLog, setWeightLog] = useState<WeightLog | null>(null);
   const [stepsInput, setStepsInput] = useState("");
@@ -24,18 +23,15 @@ export default function DashboardPage() {
   const [error, setError] = useState("");
 
   const load = useCallback(async () => {
+    if (!date) return;
     setError("");
     try {
-      const [dash, mealPage, workoutPage, stepPage, weightPage] = await Promise.all([
+      const [dash, stepPage, weightPage] = await Promise.all([
         api.dashboard(date),
-        api.meals(date),
-        api.workouts(date),
         api.steps(date),
         api.weights(),
       ]);
       setData(dash);
-      setMeals(mealPage.results);
-      setWorkouts(workoutPage.results);
       const steps = stepPage.results[0] ?? null;
       setStepLog(steps);
       setStepsInput(steps ? String(steps.steps) : "");
@@ -47,6 +43,10 @@ export default function DashboardPage() {
       setError(errorMessage(err));
     }
   }, [date]);
+
+  useEffect(() => {
+    setDate(todayISO());
+  }, []);
 
   useEffect(() => {
     load();
@@ -65,6 +65,10 @@ export default function DashboardPage() {
   const carbsTarget = data?.targets.carbs_g ?? (calorieTarget ? Math.round((calorieTarget * 0.4) / 4) : null);
   const fatTarget = data?.targets.fat_g ?? (calorieTarget ? Math.round((calorieTarget * 0.3) / 9) : null);
 
+  if (!ready || !date) {
+    return <div className="mx-auto max-w-3xl px-4 py-6 lg:px-8" />;
+  }
+
   async function saveSteps() {
     const steps = Number(stepsInput);
     if (!steps) return;
@@ -82,7 +86,27 @@ export default function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 lg:px-8">
-      <DateNav date={date} onChange={setDate} />
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="font-serif text-4xl tracking-tight">Today</h1>
+          <p className="text-sm text-muted">Your numbers so far</p>
+        </div>
+        <div className="flex shrink-0 gap-2">
+          <Link
+            href="/chat"
+            className="inline-flex items-center gap-1 rounded-full bg-lime px-3 py-1.5 text-sm font-semibold text-ink"
+          >
+            <MessageCircle size={14} /> Trainer
+          </Link>
+          <button
+            type="button"
+            onClick={() => setSheet(true)}
+            className="inline-flex items-center gap-1 rounded-full bg-ink px-3 py-1.5 text-sm font-semibold text-lime"
+          >
+            <Plus size={14} /> Log
+          </button>
+        </div>
+      </div>
 
       {error ? <p className="mt-4 text-sm text-ember">{error}</p> : null}
       {missingWeight ? (
@@ -187,91 +211,16 @@ export default function DashboardPage() {
         </form>
       </div>
 
-      <section className="mt-6">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-serif text-xl">Today&apos;s log</h2>
-          <div className="flex gap-2">
-            <Link
-              href="/chat"
-              className="inline-flex items-center gap-1 rounded-full bg-lime px-3 py-1.5 text-sm font-semibold text-ink"
-            >
-              <MessageCircle size={14} /> Text trainer
-            </Link>
-            <button
-              type="button"
-              onClick={() => setSheet(true)}
-              className="inline-flex items-center gap-1 rounded-full bg-ink px-3 py-1.5 text-sm font-semibold text-lime"
-            >
-              <Plus size={14} /> Log
-            </button>
-          </div>
+      <Link
+        href="/progress"
+        className="mt-6 flex items-center justify-between rounded-[28px] bg-paper px-5 py-4"
+      >
+        <div>
+          <p className="font-serif text-xl">Detailed progress</p>
+          <p className="text-sm text-muted">Past days, logs, and graphs</p>
         </div>
-
-        {!meals.length && !workouts.length ? (
-          <p className="rounded-[28px] bg-paper p-6 text-sm text-muted">
-            Nothing logged yet. Text your trainer, or tap Log.
-          </p>
-        ) : null}
-
-        <div className="space-y-3">
-          {meals.map((meal) => (
-            <article key={meal.id} className="rounded-[24px] bg-paper p-4">
-              <div className="mb-2 flex items-start justify-between">
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-moss">{meal.meal_type}</p>
-                  <p className="font-medium">
-                    {kcal(meal.items.reduce((sum, item) => sum + num(item.calories), 0))}
-                    <span className="ml-2 text-sm font-normal text-muted">
-                      {grams(meal.items.reduce((sum, item) => sum + num(item.protein_g), 0))} protein
-                    </span>
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    await api.deleteMeal(meal.id);
-                    load();
-                  }}
-                  className="text-muted hover:text-ember"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-              <ul className="space-y-1 text-sm">
-                {meal.items.map((item) => (
-                  <li key={item.id} className="flex justify-between">
-                    <span>{item.description}</span>
-                    <span className="text-muted">{kcal(item.calories)}</span>
-                  </li>
-                ))}
-              </ul>
-            </article>
-          ))}
-          {workouts.map((workout) => (
-            <article key={workout.id} className="rounded-[24px] bg-paper p-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-ember">Workout</p>
-                  <p className="font-medium">{workout.description}</p>
-                  <p className="text-sm text-muted">
-                    {num(workout.duration_minutes)} min · {kcal(workout.calories_burned)}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    await api.deleteWorkout(workout.id);
-                    load();
-                  }}
-                  className="text-muted hover:text-ember"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
+        <ArrowUpRight size={20} />
+      </Link>
 
       {sheet ? <LogSheet date={date} onClose={() => setSheet(false)} onSaved={load} /> : null}
     </div>

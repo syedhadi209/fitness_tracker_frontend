@@ -13,6 +13,7 @@ import {
   YAxis,
 } from "recharts";
 
+import { DayDetail } from "@/components/day-detail";
 import { api, errorMessage } from "@/lib/api";
 import { addDays, num, todayISO } from "@/lib/format";
 import type { CalorieHistoryPoint, WeightHistoryPoint } from "@/lib/types";
@@ -128,6 +129,8 @@ export default function ProgressPage() {
           </div>
         )}
       </section>
+
+      <DayDetail />
     </div>
   );
 }
