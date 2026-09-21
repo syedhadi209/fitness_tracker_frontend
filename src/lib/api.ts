@@ -17,8 +17,10 @@ import type {
 } from "./types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
-const ACCESS_KEY = "pulse.access";
-const REFRESH_KEY = "pulse.refresh";
+const ACCESS_KEY = "relish.access";
+const REFRESH_KEY = "relish.refresh";
+const LEGACY_ACCESS_KEY = "pulse.access";
+const LEGACY_REFRESH_KEY = "pulse.refresh";
 
 export class ApiError extends Error {
   status: number;
@@ -50,21 +52,27 @@ export function errorMessage(error: unknown): string {
 }
 
 function getAccess() {
-  return typeof window === "undefined" ? null : localStorage.getItem(ACCESS_KEY);
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(ACCESS_KEY) ?? localStorage.getItem(LEGACY_ACCESS_KEY);
 }
 
 function getRefresh() {
-  return typeof window === "undefined" ? null : localStorage.getItem(REFRESH_KEY);
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(REFRESH_KEY) ?? localStorage.getItem(LEGACY_REFRESH_KEY);
 }
 
 export function setTokens(tokens: TokenPair) {
   localStorage.setItem(ACCESS_KEY, tokens.access);
   localStorage.setItem(REFRESH_KEY, tokens.refresh);
+  localStorage.removeItem(LEGACY_ACCESS_KEY);
+  localStorage.removeItem(LEGACY_REFRESH_KEY);
 }
 
 export function clearTokens() {
   localStorage.removeItem(ACCESS_KEY);
   localStorage.removeItem(REFRESH_KEY);
+  localStorage.removeItem(LEGACY_ACCESS_KEY);
+  localStorage.removeItem(LEGACY_REFRESH_KEY);
 }
 
 export function hasTokens() {

@@ -148,7 +148,7 @@ export function LogSheet({ date, onClose, onSaved }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-40 flex items-end justify-center bg-ink/40 p-3 sm:items-center">
+    <div className="fixed inset-0 z-40 flex items-end justify-center bg-black/45 p-3 sm:items-center">
       <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-[28px] bg-paper p-5 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-serif text-2xl">Log {tab}</h2>
@@ -162,7 +162,9 @@ export function LogSheet({ date, onClose, onSaved }: Props) {
               key={item}
               type="button"
               onClick={() => setTab(item)}
-              className={`rounded-xl py-2 capitalize ${tab === item ? "bg-ink text-lime" : ""}`}
+              className={`rounded-xl py-2 capitalize ${
+                tab === item ? "bg-lime text-night" : "text-muted"
+              }`}
             >
               {item}
             </button>
@@ -191,7 +193,7 @@ export function LogSheet({ date, onClose, onSaved }: Props) {
                   type="button"
                   onClick={parseMeal}
                   disabled={busy || !parseText.trim()}
-                  className="rounded-2xl bg-lime px-3 text-sm font-semibold text-ink disabled:opacity-40"
+                  className="rounded-2xl bg-lime px-3 text-sm font-semibold text-night disabled:opacity-40"
                 >
                   {busy ? "..." : "Estimate"}
                 </button>
@@ -206,7 +208,7 @@ export function LogSheet({ date, onClose, onSaved }: Props) {
                     type="button"
                     onClick={() => setMealType(type)}
                     className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${
-                      mealType === type ? "bg-forest text-lime" : "bg-sand"
+                      mealType === type ? "bg-lime text-night" : "bg-cream text-ink"
                     }`}
                   >
                     {type}
@@ -220,19 +222,19 @@ export function LogSheet({ date, onClose, onSaved }: Props) {
                 type="button"
                 onClick={() => setSelected(true)}
                 className={`w-full rounded-[24px] p-4 text-left transition ${
-                  selected ? "bg-forest text-cream" : "bg-cream"
+                  selected ? "bg-cream text-ink ring-2 ring-lime" : "bg-cream"
                 }`}
               >
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <div>
-                    <p className={`text-xs font-semibold uppercase tracking-wide ${selected ? "text-lime/80" : "text-moss"}`}>
+                    <p className={`text-xs font-semibold uppercase tracking-wide ${selected ? "text-moss" : "text-muted"}`}>
                       Estimated meal
                     </p>
                     <p className="font-serif text-xl">{kcal(totals?.calories)}</p>
                   </div>
                   <span
                     className={`flex h-7 w-7 items-center justify-center rounded-full ${
-                      selected ? "bg-lime text-ink" : "border border-ink/20"
+                      selected ? "bg-lime text-night" : "border border-ink/20"
                     }`}
                   >
                     {selected ? <Check size={14} /> : null}
@@ -242,11 +244,11 @@ export function LogSheet({ date, onClose, onSaved }: Props) {
                   {draft.map((item, index) => (
                     <li key={`${item.description}-${index}`} className="flex justify-between gap-3">
                       <span>{portion(item)}</span>
-                      <span className={selected ? "text-cream/70" : "text-muted"}>{kcal(item.calories)}</span>
+                      <span className={selected ? "text-ink/70" : "text-muted"}>{kcal(item.calories)}</span>
                     </li>
                   ))}
                 </ul>
-                <p className={`mt-3 text-xs ${selected ? "text-cream/70" : "text-muted"}`}>
+                <p className={`mt-3 text-xs ${selected ? "text-ink/70" : "text-muted"}`}>
                   {grams(totals?.protein_g)} protein · {grams(totals?.carbs_g)} carbs · {grams(totals?.fat_g)} fat
                 </p>
               </button>
@@ -260,7 +262,7 @@ export function LogSheet({ date, onClose, onSaved }: Props) {
               type="button"
               onClick={saveMeal}
               disabled={busy || !selected}
-              className="w-full rounded-2xl bg-ink py-3 font-semibold text-lime disabled:opacity-40"
+              className="btn-solid w-full rounded-2xl py-3 font-semibold disabled:opacity-40"
             >
               Save meal
             </button>
@@ -287,7 +289,7 @@ export function LogSheet({ date, onClose, onSaved }: Props) {
                   type="button"
                   onClick={parseWorkout}
                   disabled={busy || !workoutText.trim()}
-                  className="rounded-2xl bg-lime px-3 text-sm font-semibold text-ink disabled:opacity-40"
+                  className="rounded-2xl bg-lime px-3 text-sm font-semibold text-night disabled:opacity-40"
                 >
                   {busy ? "..." : "Estimate"}
                 </button>
@@ -299,14 +301,14 @@ export function LogSheet({ date, onClose, onSaved }: Props) {
                 type="button"
                 onClick={() => setWorkoutSelected(true)}
                 className={`w-full rounded-[24px] p-4 text-left transition ${
-                  workoutSelected ? "bg-forest text-cream" : "bg-cream"
+                  workoutSelected ? "bg-cream text-ink ring-2 ring-lime" : "bg-cream"
                 }`}
               >
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <div>
                     <p
                       className={`text-xs font-semibold uppercase tracking-wide ${
-                        workoutSelected ? "text-lime/80" : "text-moss"
+                        workoutSelected ? "text-moss" : "text-muted"
                       }`}
                     >
                       Estimated workout
@@ -315,14 +317,14 @@ export function LogSheet({ date, onClose, onSaved }: Props) {
                   </div>
                   <span
                     className={`flex h-7 w-7 items-center justify-center rounded-full ${
-                      workoutSelected ? "bg-lime text-ink" : "border border-ink/20"
+                      workoutSelected ? "bg-lime text-night" : "border border-ink/20"
                     }`}
                   >
                     {workoutSelected ? <Check size={14} /> : null}
                   </span>
                 </div>
                 <p className="text-sm">{workoutSummary(workoutDraft)}</p>
-                <p className={`mt-3 text-xs ${workoutSelected ? "text-cream/70" : "text-muted"}`}>
+                <p className={`mt-3 text-xs ${workoutSelected ? "text-ink/70" : "text-muted"}`}>
                   Burn is calculated from your current weight when you save.
                 </p>
               </button>
@@ -336,7 +338,7 @@ export function LogSheet({ date, onClose, onSaved }: Props) {
               type="button"
               onClick={saveWorkout}
               disabled={busy || !workoutSelected}
-              className="w-full rounded-2xl bg-ink py-3 font-semibold text-lime disabled:opacity-40"
+              className="btn-solid w-full rounded-2xl py-3 font-semibold disabled:opacity-40"
             >
               Save workout
             </button>

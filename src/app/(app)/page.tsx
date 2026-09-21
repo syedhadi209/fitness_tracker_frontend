@@ -6,6 +6,7 @@ import { ArrowUpRight, Footprints, MessageCircle, Plus, Scale } from "lucide-rea
 
 import { LogSheet } from "@/components/log-sheet";
 import { MacroBar, Ring } from "@/components/rings";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { api, errorMessage } from "@/lib/api";
 import { kcal, num, todayISO } from "@/lib/format";
 import { useClientReady } from "@/lib/use-client-ready";
@@ -91,17 +92,18 @@ export default function DashboardPage() {
           <h1 className="font-serif text-4xl tracking-tight">Today</h1>
           <p className="text-sm text-muted">Your numbers so far</p>
         </div>
-        <div className="flex shrink-0 gap-2">
+        <div className="flex shrink-0 items-center gap-2">
+          <ThemeToggle compact />
           <Link
             href="/chat"
-            className="inline-flex items-center gap-1 rounded-full bg-lime px-3 py-1.5 text-sm font-semibold text-ink"
+            className="btn-ghost inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-semibold"
           >
             <MessageCircle size={14} /> Trainer
           </Link>
           <button
             type="button"
             onClick={() => setSheet(true)}
-            className="inline-flex items-center gap-1 rounded-full bg-ink px-3 py-1.5 text-sm font-semibold text-lime"
+            className="btn-accent inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-semibold"
           >
             <Plus size={14} /> Log
           </button>
@@ -115,11 +117,11 @@ export default function DashboardPage() {
         </p>
       ) : null}
 
-      <section className="mt-6 rounded-[32px] bg-forest p-6 text-cream shadow-sm">
+      <section className="mt-6 rounded-[32px] bg-forest p-6 text-foam shadow-sm">
         <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
           <Ring value={consumed} max={calorieTarget ?? 0}>
             <p className="font-serif text-4xl text-lime">{Math.round(consumed)}</p>
-            <p className="text-xs text-cream/70">
+            <p className="text-xs text-foam/70">
               {calorieTarget != null ? `of ${calorieTarget} kcal` : "no target yet"}
             </p>
           </Ring>
@@ -129,17 +131,17 @@ export default function DashboardPage() {
               <p className="font-serif text-4xl text-lime">
                 {remaining == null ? "—" : Math.round(num(remaining))}
               </p>
-              <p className="text-sm text-cream/70">
+              <p className="text-sm text-foam/70">
                 Burned {kcal(data?.burned.total)} · net {kcal(data?.net_calories)}
               </p>
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="rounded-2xl bg-white/8 p-3">
-                <p className="text-cream/60">Exercise</p>
+                <p className="text-foam/60">Exercise</p>
                 <p className="font-medium">{kcal(data?.burned.exercise)}</p>
               </div>
               <div className="rounded-2xl bg-white/8 p-3">
-                <p className="text-cream/60">Steps</p>
+                <p className="text-foam/60">Steps</p>
                 <p className="font-medium">
                   {data?.burned.step_count.toLocaleString()} · {kcal(data?.burned.steps)}
                 </p>
@@ -177,7 +179,7 @@ export default function DashboardPage() {
               placeholder="8000"
               className="w-full rounded-2xl bg-cream px-3 py-2"
             />
-            <button type="submit" className="rounded-2xl bg-ink px-4 font-semibold text-lime">
+            <button type="submit" className="btn-solid rounded-2xl px-4 font-semibold">
               Save
             </button>
           </div>
@@ -204,7 +206,7 @@ export default function DashboardPage() {
               placeholder="80.4"
               className="w-full rounded-2xl bg-cream px-3 py-2"
             />
-            <button type="submit" className="rounded-2xl bg-ink px-4 font-semibold text-lime">
+            <button type="submit" className="btn-solid rounded-2xl px-4 font-semibold">
               Save
             </button>
           </div>

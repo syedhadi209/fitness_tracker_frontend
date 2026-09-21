@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Field } from "@/components/field";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { GoalDurationField } from "@/components/goal-duration-field";
 import { HeightField } from "@/components/height-field";
 import { WeightField } from "@/components/weight-field";
@@ -127,7 +128,10 @@ export default function OnboardingPage() {
   );
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-lg flex-col justify-center px-6 py-12">
+    <main className="relative mx-auto flex min-h-screen max-w-lg flex-col justify-center px-6 py-12">
+      <div className="absolute right-6 top-6">
+        <ThemeToggle compact />
+      </div>
       <p className="text-sm font-medium text-moss">Almost there</p>
       <h1 className="mt-2 font-serif text-4xl leading-tight">A few details so calories make sense.</h1>
       <form onSubmit={onSubmit} className="mt-8 grid gap-4">
@@ -155,7 +159,7 @@ export default function OnboardingPage() {
                 key={sex}
                 type="button"
                 onClick={() => setForm({ ...form, sex })}
-                className={`rounded-2xl py-3 capitalize ${form.sex === sex ? "bg-ink text-lime" : "bg-paper"}`}
+                className={`rounded-2xl py-3 capitalize ${form.sex === sex ? "bg-night text-lime" : "bg-paper"}`}
               >
                 {sex}
               </button>
@@ -218,9 +222,9 @@ export default function OnboardingPage() {
         <button
           type="submit"
           disabled={busy}
-          className="rounded-2xl bg-ink py-3 font-semibold text-lime disabled:opacity-50"
+          className="rounded-2xl bg-night py-3 font-semibold text-lime disabled:opacity-50"
         >
-          {busy ? "Saving..." : "Enter Pulse"}
+          {busy ? "Saving..." : "Enter Relish"}
         </button>
       </form>
     </main>

@@ -3,6 +3,7 @@
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { Send } from "lucide-react";
 
+import { ThemeToggle } from "@/components/theme-toggle";
 import { api, errorMessage } from "@/lib/api";
 import { kcal, num } from "@/lib/format";
 import type { ChatEntry, ChatMessage, ChatSession, MealLog, WorkoutLog } from "@/lib/types";
@@ -13,6 +14,23 @@ const STARTERS = [
   "I hit 8,000 steps today",
   "Weighed in at 82 kg",
 ];
+
+const SESSION_KEY = "relish.session";
+const LEGACY_SESSION_KEY = "pulse.session";
+
+function readSessionId() {
+  return Number(localStorage.getItem(SESSION_KEY) || localStorage.getItem(LEGACY_SESSION_KEY) || 0);
+}
+
+function writeSessionId(id: number) {
+  localStorage.setItem(SESSION_KEY, String(id));
+  localStorage.removeItem(LEGACY_SESSION_KEY);
+}
+
+function clearSessionId() {
+  localStorage.removeItem(SESSION_KEY);
+  localStorage.removeItem(LEGACY_SESSION_KEY);
+}
 
 type Bubble = ChatMessage & { entries?: ChatEntry[] };
 
@@ -34,7 +52,7 @@ export default function ChatPage() {
   useEffect(() => {
     loadSessions()
       .then(async (list) => {
-        const stored = Number(localStorage.getItem("pulse.session") || 0);
+        const stored = readSessionId();
         const active = list.find((item) => item.id === stored) ?? list[0];
         if (active) {
           setSessionId(active.id);
@@ -69,7 +87,7 @@ export default function ChatPage() {
     try {
       const result = await api.chat(trimmed, sessionId ?? undefined);
       setSessionId(result.session_id);
-      localStorage.setItem("pulse.session", String(result.session_id));
+      writeSessionId(result.session_id);
       setMessages((current) => [
         ...current.filter((item) => item.id !== optimistic.id),
         optimistic,
@@ -99,14 +117,14 @@ export default function ChatPage() {
   }
 
   async function startNew() {
-    localStorage.removeItem("pulse.session");
+    clearSessionId();
     setSessionId(null);
     setMessages([]);
   }
 
   async function openSession(id: number) {
     setSessionId(id);
-    localStorage.setItem("pulse.session", String(id));
+    writeSessionId(id);
     const history = await api.sessionMessages(id);
     setMessages(visibleMessages(history));
   }
@@ -118,9 +136,12 @@ export default function ChatPage() {
           <p className="text-xs uppercase tracking-widest text-moss">Trainer</p>
           <h1 className="font-serif text-xl">Chat like WhatsApp</h1>
         </div>
-        <button type="button" onClick={startNew} className="text-sm font-medium text-moss">
-          New chat
-        </button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle compact />
+          <button type="button" onClick={startNew} className="text-sm font-medium text-moss">
+            New chat
+          </button>
+        </div>
       </header>
 
       <div className="flex min-h-0 flex-1 overflow-hidden">
@@ -170,7 +191,7 @@ export default function ChatPage() {
                 <div
                   className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm shadow-sm ${
                     message.role === "user"
-                      ? "rounded-br-sm bg-lime text-ink"
+                      ? "rounded-br-sm bg-lime text-night"
                       : "rounded-bl-sm bg-paper text-ink"
                   }`}
                 >

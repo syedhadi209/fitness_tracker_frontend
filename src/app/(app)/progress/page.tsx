@@ -14,11 +14,16 @@ import {
 } from "recharts";
 
 import { DayDetail } from "@/components/day-detail";
+import { useTheme } from "@/context/theme-context";
 import { api, errorMessage } from "@/lib/api";
 import { addDays, num, todayISO } from "@/lib/format";
 import type { CalorieHistoryPoint, WeightHistoryPoint } from "@/lib/types";
 
 export default function ProgressPage() {
+  const { resolved } = useTheme();
+  const grid = resolved === "dark" ? "#2a3c34" : "#e8dfcf";
+  const tick = resolved === "dark" ? "#8b9b91" : "#6d7a72";
+  const line = resolved === "dark" ? "#eef3ee" : "#12261c";
   const end = todayISO();
   const start = addDays(end, -29);
   const [calories, setCalories] = useState<CalorieHistoryPoint[]>([]);
@@ -85,9 +90,9 @@ export default function ProgressPage() {
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={calories}>
-              <CartesianGrid stroke="#e8dfcf" vertical={false} />
-              <XAxis dataKey="date" tickFormatter={shortDate} tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} />
+              <CartesianGrid stroke={grid} vertical={false} />
+              <XAxis dataKey="date" tickFormatter={shortDate} tick={{ fontSize: 11, fill: tick }} />
+              <YAxis tick={{ fontSize: 11, fill: tick }} />
               <Tooltip />
               <Area type="monotone" dataKey="consumed" stroke="#e07a4a" fill="#e07a4a33" name="Eaten" />
               <Area type="monotone" dataKey="burned" stroke="#2f6a54" fill="#2f6a5433" name="Burned" />
@@ -101,9 +106,9 @@ export default function ProgressPage() {
         <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={calories}>
-              <CartesianGrid stroke="#e8dfcf" vertical={false} />
-              <XAxis dataKey="date" tickFormatter={shortDate} tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} />
+              <CartesianGrid stroke={grid} vertical={false} />
+              <XAxis dataKey="date" tickFormatter={shortDate} tick={{ fontSize: 11, fill: tick }} />
+              <YAxis tick={{ fontSize: 11, fill: tick }} />
               <Tooltip />
               <Area type="monotone" dataKey="steps" stroke="#3f9d8f" fill="#3f9d8f33" name="Steps" />
             </AreaChart>
@@ -119,11 +124,11 @@ export default function ProgressPage() {
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={weights}>
-                <CartesianGrid stroke="#e8dfcf" vertical={false} />
-                <XAxis dataKey="date" tickFormatter={shortDate} tick={{ fontSize: 11 }} />
-                <YAxis domain={["auto", "auto"]} tick={{ fontSize: 11 }} />
+                <CartesianGrid stroke={grid} vertical={false} />
+                <XAxis dataKey="date" tickFormatter={shortDate} tick={{ fontSize: 11, fill: tick }} />
+                <YAxis domain={["auto", "auto"]} tick={{ fontSize: 11, fill: tick }} />
                 <Tooltip />
-                <Line type="monotone" dataKey="weight_kg" stroke="#12261c" strokeWidth={2} dot name="kg" />
+                <Line type="monotone" dataKey="weight_kg" stroke={line} strokeWidth={2} dot name="kg" />
               </LineChart>
             </ResponsiveContainer>
           </div>

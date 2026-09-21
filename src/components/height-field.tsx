@@ -43,7 +43,7 @@ export function HeightField({
               key={item}
               type="button"
               onClick={() => setUnit(item)}
-              className={`rounded-full px-3 py-1 ${unit === item ? "bg-ink text-lime" : "text-muted"}`}
+              className={`rounded-full px-3 py-1 ${unit === item ? "bg-night text-lime" : "text-muted"}`}
             >
               {item === "cm" ? "cm" : "ft / in"}
             </button>

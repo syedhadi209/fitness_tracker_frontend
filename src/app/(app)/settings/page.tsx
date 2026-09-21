@@ -4,16 +4,19 @@ import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Field } from "@/components/field";
+import { RelishMark } from "@/components/relish-mark";
 import { GoalDurationField } from "@/components/goal-duration-field";
 import { HeightField } from "@/components/height-field";
 import { WeightField } from "@/components/weight-field";
 import { useAuth } from "@/context/auth-context";
+import { useTheme, type Theme } from "@/context/theme-context";
 import { api, errorMessage } from "@/lib/api";
 import { todayISO } from "@/lib/format";
 import { paceLabel, weeklyChangeKg } from "@/lib/pace";
 
 export default function SettingsPage() {
   const { user, refreshUser, logout } = useAuth();
+  const { theme, setTheme } = useTheme();
   const router = useRouter();
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
@@ -151,6 +154,29 @@ export default function SettingsPage() {
     <div className="mx-auto max-w-xl px-4 py-6 lg:px-8">
       <h1 className="font-serif text-4xl">You</h1>
       <p className="mt-1 text-sm text-muted">{user.email}</p>
+      <section className="mt-6 rounded-[28px] bg-paper p-5">
+        <div className="mb-3 flex items-center gap-3">
+          <RelishMark size={40} />
+          <div>
+            <p className="font-serif text-xl">Appearance</p>
+            <p className="text-sm text-muted">Light, dark, or match the system</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          {(["light", "dark", "system"] as Theme[]).map((option) => (
+            <button
+              key={option}
+              type="button"
+              onClick={() => setTheme(option)}
+              className={`rounded-2xl py-3 capitalize ${
+                theme === option ? "bg-night text-lime" : "bg-cream"
+              }`}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+      </section>
       <form onSubmit={onSubmit} className="mt-6 space-y-4">
         <Field label="First name">
           <input
@@ -175,7 +201,7 @@ export default function SettingsPage() {
                 key={sex}
                 type="button"
                 onClick={() => setForm({ ...form, sex })}
-                className={`rounded-2xl py-3 capitalize ${form.sex === sex ? "bg-ink text-lime" : "bg-cream"}`}
+                className={`rounded-2xl py-3 capitalize ${form.sex === sex ? "bg-night text-lime" : "bg-cream"}`}
               >
                 {sex}
               </button>
@@ -268,7 +294,7 @@ export default function SettingsPage() {
         <button
           type="submit"
           disabled={busy}
-          className="w-full rounded-2xl bg-ink py-3 font-semibold text-lime disabled:opacity-50"
+          className="w-full rounded-2xl bg-night py-3 font-semibold text-lime disabled:opacity-50"
         >
           Save profile
         </button>

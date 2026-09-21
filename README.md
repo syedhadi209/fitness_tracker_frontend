@@ -1,6 +1,6 @@
 # Fitness Tracker Frontend
 
-Next.js app for Pulse — log food, training, steps and weight through a
+Next.js app for Relish — log food, training, steps and weight through a
 WhatsApp-style trainer chat, with a dashboard and progress graphs on top of
 the Django API.
 
